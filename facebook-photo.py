@@ -2,9 +2,12 @@ import requests
 import json
 import os
 from bs4 import BeautifulSoup
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # can be changed to webdav url if using remotely
-root_path = '/Volumes/files/social'
+root_path = os.getenv('SOCIALS_ROOT')
 
 image_find_base_path = root_path + '/_/facebook'
 base_path = root_path + '/facebook'
@@ -46,12 +49,19 @@ for album_number in range(album_count):
       link_href_parts = link_href.split('/')
       album_id = link_href_parts[1]
       image_filename = link_href_parts[2]
+      target_path = base_path + '/photos_and_videos/' + album_id + '/'
+      
+      image_exists = os.path.exists(target_path + image_filename)
             
+      if image_exists:
+        print('--- image already exists so skipping "' + album_id + '/' + image_filename + '"')
+        continue
+      
       print('--- attempting to find image "' + album_id + '/' + image_filename + '"')
     
       image_find_path = image_find_base_path + '/' + image_filename
       image_found = os.path.exists(image_find_path)
-      target_path = base_path + '/photos_and_videos/' + album_id + '/'
+      
       
       if image_found != True:
         print('--- image not found "' + image_find_path + '"')
